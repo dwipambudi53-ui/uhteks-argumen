@@ -1,0 +1,2440 @@
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+
+// 50 Contextual HOTS Questions for Bahasa Indonesia XI SMK (2026)
+// Competencies:
+// 1-10: Memahami Teks Argumentasi
+// 11-20: Memahami Ciri Teks Argumentasi
+// 21-30: Struktur Teks Argumentasi
+// 31-40: Kaidah Kebahasaan Teks Argumentasi
+// 41-50: Poster Teks Argumentasi
+// Breakdown: 35 PG (5 options), 7 BS (Benar/Salah), 8 PGK (Pilihan Ganda Kompleks)
+
+const QUESTIONS_DATABASE = [
+  // --- KOMPETENSI 1: MEMAHAMI TEKS ARGUMENTASI (Soal 1-10) ---
+  {
+    id: 1,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Penerapan sistem pembacaan kode QR dan inventarisasi berbasis artificial intelligence (AI) di bengkel praktik SMK Negeri 2 Songgom telah mengurangi waktu pencarian suku cadang hingga 65%. Meskipun beberapa teknisi senior awalnya meragukan efisiensi teknologi ini karena alasan kebiasaan manual, data operasional tiga bulan terakhir menunjukkan penurunan angka kehilangan alat kerja hingga nol persen dan peningkat presisi jam kerja siswa.",
+    question: "Manakah gagasan utama yang tepat dari teks argumentatif di atas?",
+    options: [
+      "Teknisi senior di SMK Negeri 2 Songgom menolak otomatisasi bengkel.",
+      "Penerapan teknologi AI dan kode QR terbukti meningkatkan efisiensi dan ketertiban bengkel praktik SMK.",
+      "Pencarian suku cadang manual membutuhkan waktu yang sangat lama dan berisiko tinggi.",
+      "Otomatisasi bengkel hanya cocok diterapkan di sekolah-sekolah perkotaan.",
+      "Penggunaan alat manual di bengkel SMK sudah sepenuhnya dilarang oleh kurikulum 2026."
+    ],
+    key: 1
+  },
+  {
+    id: 2,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Pemasangan panel surya rooftop berkapasitas 20 kWp di SMK Negeri 2 Songgom berhasil menghemat biaya listrik sekolah sebesar Rp4.500.000,00 per bulan. Keberhasilan ini membuktikan bahwa investasi energi terbarukan di lingkungan vokasi tidak hanya ramah lingkungan tetapi juga sangat menguntungkan secara finansial. Sekolah-sekolah vokasi lain sepatutnya segera meniru langkah ini agar anggaran operasional dapat dialokasikan untuk penambahan fasilitas praktik siswa.",
+    question: "Berdasarkan paragraf di atas, manakah yang merupakan kalimat fakta?",
+    options: [
+      "Investasi energi terbarukan adalah langkah terbaik untuk semua sekolah di Indonesia.",
+      "Sekolah-sekolah vokasi lain sepatutnya segera meniru langkah SMK Negeri 2 Songgom.",
+      "Pemasangan panel surya rooftop berkapasitas 20 kWp menghemat biaya listrik Rp4.500.000,00 per bulan.",
+      "Alokasi anggaran operasional akan jauh lebih berguna jika dipakai membeli peralatan praktik baru.",
+      "Penghematan biaya listrik selalu menjadi masalah utama di setiap SMK negeri."
+    ],
+    key: 2
+  },
+  {
+    id: 3,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Penggunaan simulator pengelasan virtual reality (VR) dalam pembelajaran Teknik Pengelasan di SMK memungkinkan siswa melakukan pengulangan latihan tanpa membuang material besi dan gas. Data menunjukkan bahwa efisiensi bahan praktik meningkat 40%, namun nilai ketrampilan fisik motorik siswa saat uji kompetensi riil tetap setara dengan metode konvensional.",
+    question: "Simpulan yang paling logis dan obyektif berdasarkan argumen teks di atas adalah...",
+    options: [
+      "Simulator VR harus menggantikan total seluruh peralatan pengelasan fisik di bengkel SMK.",
+      "Penggunaan simulator VR efektif menghemat efisiensi bahan tanpa menurunkan mutu keterampilan motorik siswa.",
+      "Siswa yang belajar dengan simulator VR dipastikan memiliki keterampilan lebih tinggi daripada metode fisik.",
+      "Metode konvensional pengelasan tidak lagi relevan diterapkan dalam kurikulum SMK modern.",
+      "Teknologi VR memerlukan biaya tinggi sehingga tidak layak digunakan di sekolah vokasi."
+    ],
+    key: 1
+  },
+  {
+    id: 4,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Sebuah artikel opini menyatakan: 'Penggunaan sepeda listrik oleh siswa SMK ke sekolah harus diwajibkan karena sepeda listrik tidak menghasilkan emosi gas buang sama sekali dan pasti meniadakan angka kecelakaan lalu lintas remaja.'",
+    question: "Kelemahan argumen pada artikel opini di atas terletak pada...",
+    options: [
+      "Klaim bahwa sepeda listrik tidak menggunakan bahan bakar fosil.",
+      "Asumsi yang tidak logis bahwa penggunaan sepeda listrik dipastikan meniadakan angka kecelakaan.",
+      "Penggunaan istilah emosi gas buang yang membingungkan pembaca.",
+      "Kurangnya pembahasan mengenai harga jual sepeda listrik di pasaran.",
+      "Penolakan terhadap penggunaan moda transportasi umum oleh siswa."
+    ],
+    key: 1
+  },
+  {
+    id: 5,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Seorang penulis mengajukan tesis: 'Sertifikasi kompetensi standar industri wajib dimiliki oleh setiap lulusan SMK untuk memenangkan persaingan kerja di era otomatisasi 2026.'",
+    question: "Manakah data empiris yang paling relevan untuk mendukung tesis tersebut?",
+    options: [
+      "Data survei kepuasan siswa terhadap fasilitas ruang kelas di SMK.",
+      "Laporan Badan Pusat Statistik (BPS) tentang tingkat penyerapan kerja lulusan SMK bersertifikasi vs non-sertifikasi.",
+      "Daftar nama perusahaan manufaktur yang beroperasi di wilayah Jawa Tengah.",
+      "Artikel blog tentang sejarah perkembangan pendidikan vokasi di Indonesia.",
+      "Brosur penerimaan peserta didik baru SMK Negeri 2 Songgom tahun 2026."
+    ],
+    key: 1
+  },
+  {
+    id: 6,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Berdasarkan ulasan teknis, pengolahan limbah minyak jelantah menjadi biodiesel di unit produksi jurusan Teknik Kimia Industri SMK terbukti menghasilkan emisi karbon 60% lebih rendah dibanding solar konvensional. Meski demikian, kapasitas produksi harian sekolah masih terbatas pada angka 100 liter per hari akibat keterbatasan alat reaktor esterifikasi.",
+    question: "Sikap obyektif penulis dalam menyajikan teks argumentasi tersebut ditunjukkan melalui...",
+    options: [
+      "Menyoroti keunggulan emisi rendah sekaligus mengakui secara terbuka keterbatasan kapasitas produksi.",
+      "Mendesak pemerintah untuk segera menutup pabrik solar konvensional.",
+      "Mengabaikan fakta keterbatasan alat agar inovasi sekolah terlihat sempurna.",
+      "Menyarankan siswa untuk menghentikan produksi biodiesel jika tidak dapat mencapai target 1000 liter.",
+      "Menyalahkan pihak sekolah atas keterbatasan sarana reaktor esterifikasi."
+    ],
+    key: 0
+  },
+  {
+    id: 7,
+    competency: "Memahami Teks Argumentasi",
+    type: "PG",
+    stimulus: "Teks A: Program Praktik Kerja Lapangan (PKL) 6 bulan sangat efektif karena memberikan pengalaman kerja riil dan membentuk etika profesional siswa secara mendalam.\nTeks B: Program PKL 6 bulan terlalu lama karena mengurangi porsi penguatan teori dasar kebangsaan dan literasi finansial di kelas.",
+    question: "Perbandingan fokus argumen dari kedua teks di atas adalah...",
+    options: [
+      "Teks A fokus pada kesiapan teknis, Teks B fokus pada biaya sekolah.",
+      "Teks A mendukung PKL dari sudut pengalaman kerja, Teks B mengritik durasi PKL dari sudut keseimbangan akademik.",
+      "Teks A menolak program PKL, Teks B mendukung perpanjangan masa PKL menjadi 1 tahun.",
+      "Kedua teks sepakat bahwa PKL tidak memiliki manfaat bagi lulusan SMK.",
+      "Teks A dan Teks B sama-sama menuntut kurikulum PKL dihapuskan sepenuhnya."
+    ],
+    key: 1
+  },
+  {
+    id: 8,
+    competency: "Memahami Teks Argumentasi",
+    type: "BS",
+    stimulus: "Kutipan Teks: 'Penggunaan pupuk organik cair buatan siswa Agribisnis SMK berhasil meningkatkan bobot panen cabai sebesar 25% (fakta). Oleh karena itu, seluruh petani di Indonesia pasti akan mengalami kebangkrutan jika tetap bertahan menggunakan pupuk kimia sintetis (opini).'",
+    question: "Pernyataan: 'Paragraf di atas menggabungkan fakta empiris hasil panen dengan opini spekulatif tentang kebangkrutan petani.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 9,
+    competency: "Memahami Teks Argumentasi",
+    type: "BS",
+    stimulus: "Kutipan Teks: 'Berdasarkan data tracer study 2025, 78% lulusan SMK Negeri 2 Songgom diterima bekerja di dunia usaha/dunia industri kurang dari 3 bulan setelah lulus.'",
+    question: "Pernyataan: 'Data statistik di atas berfungsi sebagai argumen pendukung logis untuk membuktikan kualitas keterserapan lulusan sekolah.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 10,
+    competency: "Memahami Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Tesis: 'Literasi digital dan pemahaman dasar kecerdasan buatan (AI) harus diintegrasikan ke dalam seluruh mata pelajaran SMK, tidak terbatas pada jurusan TI.'",
+    question: "Pilih SEMUA bukti pendukung yang relevan dan logis untuk mendukung tesis di atas!",
+    options: [
+      "A. Hampir semua sektor industri (otomotif, pertanian, akuntansi) kini mengadopsi perangkat lunak berbasis AI.",
+      "B. Siswa SMK yang memahami AI dapat memanfaatkan alat bantu digital secara etis untuk memecahkan masalah kerja.",
+      "C. Penggunaan smartphone di kelas dapat menyebabkan siswa kurang konsentrasi jika tidak diawasi.",
+      "D. Tenaga kerja masa depan dituntut memiliki kecakapan adaptasi teknologi agar tidak terdisrupsi.",
+      "E. Alat-alat praktik di bengkel manual memiliki nilai sejarah yang tinggi untuk dipertahankan."
+    ],
+    key: [0, 1, 3]
+  },
+
+  // --- KOMPETENSI 2: CIRI TEKS ARGUMENTASI (Soal 11-20) ---
+  {
+    id: 11,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Sebuah teks menyajikan uraian: pendirian penulis disertai data statistik, analisis sebab-akibat, bukti fakta lapangan, dan diakhiri dengan simpulan logis tanpa membujuk emosi pembaca secara berlebihan.",
+    question: "Ciri utama yang paling menonjol dari karakteristik teks di atas adalah...",
+    options: [
+      "Menggunakan alur cerita fiktif untuk menyentuh perasaan pembaca.",
+      "Mengutamakan pembuktian kebenaran gagasan secara rasional dan obyektif.",
+      "Menggambarkan objek teknis secara rinci hingga pancaindra tersentuh.",
+      "Memberikan langkah-langkah kerja urut dari awal hingga akhir.",
+      "Menggunakan bahasa kiasan dan puisi untuk meyakinkan pembaca."
+    ],
+    key: 1
+  },
+  {
+    id: 12,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Paragraf: 'Bengkel A yang menerapkan standar 5R (Ringkas, Rapi, Resik, Rawat, Rajin) mengalami penurunan kecelakaan kerja 80%. Bengkel B yang menerapkan 5R mencatat efisiensi waktu kerja meningkat 35%. Bengkel C berhasil menekan kerusakan mesin hingga 50% setelah menerapkan 5R. Dengan demikian, penerapan budaya 5R terbukti meningkatkan performa keselamatan dan efisiensi bengkel praktik SMK.'",
+    question: "Paragraf argumentasi di atas dikembangkan menggunakan pola penalaran...",
+    options: [
+      "Deduktif (Umum ke Khusus)",
+      "Induktif (Khusus ke Umum / Generalisasi)",
+      "Analogi Kiasan",
+      "Chronological Narrative",
+      "Sebab-Akibat Campuran Tanpa Data"
+    ],
+    key: 1
+  },
+  {
+    id: 13,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kurangnya perawatan berkala pada filter udara mesin sepeda motor menyebabkan pasokan oksigen ke ruang bakar berkurang. Akibatnya, pembakaran bahan bakar menjadi tidak sempurna dan konsumsi bensin membengkak hingga 20%. Oleh sebab itu, pembersihan filter udara setiap 4.000 km merupakan keharusan mekanis.",
+    question: "Ciri hubungan antar-gagasan yang dominan dalam paragraf argumentasi teknis di atas adalah...",
+    options: [
+      "Kausalitas (Sebab - Akibat)",
+      "Oposisi Antonym",
+      "Hierarki Jabatan",
+      "Definisi Perbandingan Kiasan",
+      "Kronologi Waktu Sejarah"
+    ],
+    key: 0
+  },
+  {
+    id: 14,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kalimat I: 'Kita harus menolak teknologi otomatisasi karena kasihan para pekerja manual akan kehilangan mata pencaharian mereka!'\nKalimat II: 'Otomatisasi industri perlu diimbangi dengan reskilling tenaga kerja karena data ILO menunjukkan 45% tugas rutin dapat digantikan oleh mesin dalam dekade ini.'",
+    question: "Analisis terhadap kedua kalimat di atas yang menunjukkan ciri argumentasi rasional yang benar adalah...",
+    options: [
+      "Kalimat I lebih argumentatif karena membela hak-hak rakyat kecil.",
+      "Kalimat II memenuhi ciri argumentasi obyektif karena bersandar pada data dan solusi logis.",
+      "Kedua kalimat sama-sama merupakan fakta ilmiah tanpa kelemahan.",
+      "Kalimat I dan II merupakan contoh teks persuasi iklan niaga.",
+      "Kalimat II lemah karena menggunakan istilah asing 'reskilling'."
+    ],
+    key: 1
+  },
+  {
+    id: 15,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Pernyataan: 'Kedelai lokal memiliki kandungan protein 38-40%, lebih tinggi dibanding kedelai impor yang rata-rata 36%. Selain itu, masa simpan kedelai lokal lebih segar tanpa pengawet sintesis.'",
+    question: "Fungsi utama pernyataan berfakta di atas dalam sebuah teks argumentasi ketahanan pangan adalah...",
+    options: [
+      "Sebagai stimulus hiburan bagi pembaca.",
+      "Sebagai landasan bukti empiris untuk menguatkan argumen keunggulan kedelai lokal.",
+      "Sebagai penjelas prosedur pembuatan tempe dan tahu.",
+      "Sebagai perhiasan bahasa agar teks terlihat ilmiah.",
+      "Sebagai pengalih perhatian dari topik utama."
+    ],
+    key: 1
+  },
+  {
+    id: 16,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Manakah di antara kalimat berikut yang paling tidak objektif (mengandung bias emosional) sehingga harus dihindari dalam teks argumentasi ilmiah SMK?",
+    options: [
+      "Tingkat kehausan ban berkurang 15% jika tekanan angin dijaga sesuai rekomendasi pabrikan.",
+      "Penggunaan oli palsu dipastikan merusak komponen liner silinder dalam jangka panjang.",
+      "Semua montir tua pasti keras kepala dan tidak mau menerima teknologi diagnosa scanner modern.",
+      "Sistem pengereman ABS meminimalisasi risiko slip pada kondisi jalan licin.",
+      "Uji emisi secara berkala menekan kadar hidrokarbon gas buang kendaraan."
+    ],
+    key: 2
+  },
+  {
+    id: 17,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PG",
+    stimulus: "Merawat mesin kendaraan bermotor tanpa memahami prinsip kelistrikannya sama seperti mengemudikan kapal di tengah badai tanpa kompas. Kita mungkin tetap bergerak, namun arah ketepatan tindakan perbaikan menjadi spekulatif dan berbahaya.",
+    question: "Teknik penyampaian argumen di atas memanfaatkan pola...",
+    options: [
+      "Analogi (Pengandaian/Perbandingan konseptual)",
+      "Data Statistik Kuantitatif",
+      "Kutipan Langsung Tokoh",
+      "Definisi Kamus",
+      "Syllogism Kategoris"
+    ],
+    key: 0
+  },
+  {
+    id: 18,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "BS",
+    stimulus: "Teks Argumentasi hendaknya bersifat terbuka terhadap kritik, menggunakan bahasa denotatif, dan menyajikan argumen secara logis berlandaskan bukti sah, bukan paksaan kehendak sepihak.",
+    question: "Pernyataan: 'Pernyataan mengenai ciri-ciri teks argumentasi di atas adalah benar.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 19,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "BS",
+    stimulus: "Ciri utama yang membedakan teks argumentasi dengan teks eksposisi adalah bahwa teks argumentasi bertujuan meyakinkan pembaca agar menyetujui pendapat penulis melalui pembuktian logis, sedangkan eksposisi berfokus menjelaskan informasi sejelas-jelasnya.",
+    question: "Pernyataan: 'Perbedaan fungsi utama antara teks argumentasi dan eksposisi tersebut adalah salah.'",
+    options: ["BENAR", "SALAH"],
+    key: "SALAH"
+  },
+  {
+    id: 20,
+    competency: "Memahami Ciri Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Seorang siswa sedang menyusun karangan tentang 'Pentingnya Keselamatan dan Kesehatan Kerja (K3) di Bengkel Sekolah'.",
+    question: "Manakah opsi yang merupakan CIRI-CIRI PARAGRAF ARGUMENTASI YANG BAIK yang harus diterapkan siswa tersebut?",
+    options: [
+      "A. Memuat tesis yang jelas mengenai kewajiban kepatuhan APD (Alat Pelindung Diri).",
+      "B. Menyertakan data angka kecelakaan kerja sekolah sebagai bukti pendukung.",
+      "C. Menggunakan bahasa yang provokatif dan menyalahkan siswa secara pribadi.",
+      "D. Menjelaskan penalaran logis hubungan K3 dengan efisiensi kerja.",
+      "E. Mengakhiri karangan dengan kesimpulan yang memperkuat tesis awal."
+    ],
+    key: [0, 1, 3, 4]
+  },
+
+  // --- KOMPETENSI 3: STRUKTUR TEKS ARGUMENTASI (Soal 21-30) ---
+  {
+    id: 21,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "(1) Di tengah pesatnya perkembangan industri manufaktur 4.0, kebutuhan akan tenaga ahli kontrol kualitas (Quality Control) yang presisi menjadi sangat mendesak. (2) Sayangnya, sebagian besar lulusan vokasi masih belum menguasai penggunaan alat ukur digital presisi tinggi. (3) Oleh karena itu, modernisasi fasilitas laboratorium metrologi di SMK harus menjadi prioritas utama pemerintah daerah tahun 2026.",
+    question: "Dalam struktur teks argumentasi, bagian paragraf di atas berfungsi sebagai...",
+    options: [
+      "Penegasan Ulang / Simpulan",
+      "Tesis / Pengenalan Isu",
+      "Rangkaian Argumen Tanpa Data",
+      "Reorientasi Kisah",
+      "Koda Pendukung"
+    ],
+    key: 1
+  },
+  {
+    id: 22,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Paragraf: 'Pertama, penggunaan sistem pendingin berbasis cairan (liquid cooling) pada server sekolah mampu menekan suhu prosesor hingga 15°C lebih rendah dibanding kipas angin biasa. Kedua, konsumsi daya listrik pendingin cairan 30% lebih hemat. Data hasil uji coba di lab komputer SMK 2 Songgom menunjukkan tidak ada crash sistem selama 72 jam nonstop.'",
+    question: "Berdasarkan struktur teks argumentasi, paragraf di atas menduduki bagian...",
+    options: [
+      "Pendahuluan / Tesis",
+      "Rangkaian Argumentasi / Bukti Pendukung",
+      "Penegasan Ulang",
+      "Rekomendasi Penutup",
+      "Judul Utama"
+    ],
+    key: 1
+  },
+  {
+    id: 23,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Paragraf Penutup: 'Dengan demikian, jelaslah bahwa penguasaan bahasa Inggris teknis dan literasi pemrograman dasar bukan lagi sekadar nilai tambah, melainkan syarat mutlak bagi lulusan SMK untuk dapat bersaing di pasar kerja global. Langkah strategis pelatihan guru dan pembaruan kurikulum harus segera direalisasikan.'",
+    question: "Fungsi utama dari bagian Penegasan Ulang (Reiteration) di atas adalah...",
+    options: [
+      "Mengenalkan isu baru yang belum pernah dibahas sebelumnya.",
+      "Merumuskan kembali inti tesis dan argumen utama secara ringkas serta memberikan dorongan tindakan.",
+      "Menyajikan data statistik mentah hasil pengujian laboratorium.",
+      "Menguraikan contoh-contoh kasus kegagalan siswa di tempat kerja.",
+      "Menyanggah pendapat para ahli bahasa Indonesia."
+    ],
+    key: 1
+  },
+  {
+    id: 24,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Teks Rumpang:\n[Tesis]: Pengolahan sampah organik di kantin sekolah dengan metode komposting vermikompos sangat bermanfaat bagi lingkungan sekolah.\n[Argumen 1]: Kasus penumpukan sisa makanan berkurang hingga 80% setiap hari.\n[Argumen 2]: Hasil kompos dapat digunakan untuk memupuk kebun sayur hydroponik sekolah.\n[... rumpang ...]",
+    question: "Manakah kalimat Penegasan Ulang yang paling cocok untuk mengisi bagian rumpang di atas?",
+    options: [
+      "Namun, harga cacing tanah untuk vermikompos masih dinilai mahal oleh pengelola kantin.",
+      "Oleh karena itu, penerapan metode vermikompos di kantin sekolah merupakan solusi efektif yang patut didukung dan dilestarikan.",
+      "Kantin sekolah juga harus menjual makanan berharga murah agar disukai siswa.",
+      "Sampah anorganik seperti plastik harus dibakar di halaman belakang sekolah setiap sore.",
+      "Demikianlah cara membuat kompos dari daun-daun kering di taman sekolah."
+    ],
+    key: 1
+  },
+  {
+    id: 25,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Menganalisis teks yang kehilangan bagian data fakta pada rangkaian argumen.\nSoal: Jika sebuah teks argumentasi hanya memiliki Tesis dan Penegasan Ulang tanpa didukung Rangkaian Argumentasi berfakta, maka dampak utama terhadap kualitas teks tersebut adalah...",
+    question: "Dampak utama terhadap kualitas teks tersebut adalah...",
+    options: [
+      "Teks menjadi lebih mudah dipahami oleh pembaca awam.",
+      "Teks kehilangan daya buktinya dan berubah menjadi sebatas opini atau klaim sepihak yang lemah.",
+      "Struktur teks bergeser menjadi teks eksposisi berita yang obyektif.",
+      "Jumlah kata dalam teks menjadi lebih efisien dan menarik.",
+      "Teks otomatis dikategorikan sebagai karangan fiksi ilmiah."
+    ],
+    key: 1
+  },
+  {
+    id: 26,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Urutan paragraf acak:\n(1) Oleh sebab itu, integrasi pembelajaran Green Skills di SMK Negeri 2 Songgom merupakan investasi jangka panjang yang tepat.\n(2) Dunia industri saat ini menuntut standar ramah lingkungan pada setiap proses manufaktur.\n(3) Data Kementerian Industri menunjukkan 70% perusahaan mengutamakan pelamar yang memiliki pemahaman efisiensi energi.",
+    question: "Urutan struktur teks argumentasi yang logis (Tesis - Argumen - Penegasan Ulang) adalah...",
+    options: [
+      "(1) - (2) - (3)",
+      "(2) - (3) - (1)",
+      "(3) - (1) - (2)",
+      "(2) - (1) - (3)",
+      "(1) - (3) - (2)"
+    ],
+    key: 1
+  },
+  {
+    id: 27,
+    competency: "Struktur Teks Argumentasi",
+    type: "PG",
+    stimulus: "Bagian Tesis sebuah karangan memuat kalimat: 'Penggunaan kecerdasan buatan (AI) dalam menyusun laporan praktikum siswa SMK harus dilarang total karena merusak daya kritis.'",
+    question: "Manakah kalimat sanggahan (counter-argument) yang paling logis untuk mengkritik tesis di atas pada bagian Rangkaian Argumen?",
+    options: [
+      "AI memang sangat canggih dan tidak ada manusia yang bisa menandinginya.",
+      "Pelarangan total kurang tepat; yang dibutuhkan adalah edukasi batasan etis dan integrasi AI sebagai alat bantu analisis.",
+      "Semua siswa SMK sebaiknya tidak usah membuat laporan praktikum sama sekali.",
+      "Guru harus memberikan nilai nol kepada siswa yang memakai komputer di sekolah.",
+      "Harga langganan aplikasi AI saat ini makin terjangkau oleh kantong siswa."
+    ],
+    key: 1
+  },
+  {
+    id: 28,
+    competency: "Struktur Teks Argumentasi",
+    type: "BS",
+    stimulus: "Struktur standar teks argumentasi secara berurutan terdiri atas: (1) Pengenalan Isu / Tesis, (2) Rangkaian Argumentasi dan Bukti, serta (3) Penegasan Ulang / Simpulan.",
+    question: "Pernyataan: 'Urutan struktur teks argumentasi tersebut sudah tepat.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 29,
+    competency: "Struktur Teks Argumentasi",
+    type: "BS",
+    stimulus: "Kutipan: 'Berdasarkan data uji emisi, motor bermesin injeksi menghasilkan kadar CO 40% lebih rendah dibanding karburator. Hal ini dibuktikan oleh penelitian riset otomotif 2025.'",
+    question: "Pernyataan: 'Kutipan di atas menempati bagian Tesis / Pengenalan Isu dalam karangan argumentasi.'",
+    options: ["BENAR", "SALAH"],
+    key: "SALAH"
+  },
+  {
+    id: 30,
+    competency: "Struktur Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Diberikan beberapa paragraf karangan argumentasi tentang 'Pengembangan Motor Listrik Rakitan SMK'.",
+    question: "Pilih SEMUA pernyataan yang MERUPAKAN BAGIAN DARI RANGKAIAN ARGUMENTASI yang valid!",
+    options: [
+      "A. Motor listrik rakitan siswa mampu menempuh jarak 60 km dalam sekali pengisian daya baterai.",
+      "B. Biaya operasional pengisian daya baterai hanya Rp2.000 per 20 km, jauh lebih murah dibanding BBM.",
+      "C. Menurut pendapat saya, warna cat motor listrik tersebut kurang bagus.",
+      "D. Hasil pengujian daya tahan menunjukkan baterai lithium ferro-phosphate aman dari risiko overheat.",
+      "E. Sepeda motor adalah kendaraan roda dua yang diminati masyarakat."
+    ],
+    key: [0, 1, 3]
+  },
+
+  // --- KOMPETENSI 4: KAIDAH KEBAHASAAN TEKS ARGUMENTASI (Soal 31-40) ---
+  {
+    id: 31,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Penerapan keselamatan kerja di bengkel belum maksimal, [...] terjadi beberapa insiden kecil cedera tangan siswa minggu lalu. [...], pihak sekolah memperketat pengawasan penggunaan sarung tangan standar.",
+    question: "Konjungsi kausalitas yang paling tepat untuk mengisi bagian rumpang di atas adalah...",
+    options: [
+      "sehingga; Oleh karena itu",
+      "tetapi; Meskipun",
+      "bahkan; Akan tetapi",
+      "karena; Walaupun demikian",
+      "sambil; Selain itu"
+    ],
+    key: 0
+  },
+  {
+    id: 32,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kalimat: 'Tim penilai *meyakini* bahwa hasil kalibrasi alat ukur mikrometer skrup karya siswa SMK 2 Songgom memiliki akurasi yang tinggi.'",
+    question: "Kata bercetak miring (*meyakini*) dalam kaidah kebahasaan teks argumentasi termasuk jenis...",
+    options: [
+      "Verba Material (Tindakan Fisik)",
+      "Verba Mental (Ungkapan Persepsi/Kognitif)",
+      "Konjungsi Temporal",
+      "Pronomina Persona Ketiga",
+      "Adverbia Cara"
+    ],
+    key: 1
+  },
+  {
+    id: 33,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kalimat: 'Kebijakan pemisahan sampah organik dan anorganik di lingkungan SMK merupakan langkah yang *sangat krusial* dan *efektif* untuk mengurangi pencemaran tanah.'",
+    question: "Kata *sangat krusial* dan *efektif* berfungsi sebagai kata...",
+    options: [
+      "Kata Kerja Perintah (Imperatif)",
+      "Kata Evaluatif / Adjektiva Kualitatif untuk memperkuat penilaian",
+      "Kata Rujukan Penunjuk Tempat",
+      "Konjungsi Antarparagraf",
+      "Kata Bilangan Kuantitas"
+    ],
+    key: 1
+  },
+  {
+    id: 34,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kalimat: 'Penerapan Internet of Things (IoT) di bidang pertanian modern makin marak. *Hal ini* terbukti meningkatkan efisiensi penyiraman tanaman hingga 50%.'",
+    question: "Frasa *Hal ini* pada kalimat kedua merujuk pada...",
+    options: [
+      "Penerapan Internet of Things (IoT) di bidang pertanian modern.",
+      "Tanaman hydroponik di green house.",
+      "Efisiensi penyiraman 50%.",
+      "Peralatan manual petani tradisional.",
+      "Lahan pertanian yang makin sempit."
+    ],
+    key: 0
+  },
+  {
+    id: 35,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Manakah kalimat berikut yang menggunakan *istilah teknis* bidang Otomotif/Teknik secara tepat dalam teks argumentasi?",
+    options: [
+      "Mesin motor itu terbatuk-batuk karena merasa sedih kurang oli.",
+      "Pemeriksaan nilai *torque* dan kerapatan *clearance valve* secara berkala mencegah terjadinya benturan katup.",
+      "Oli mesin adalah cairan hitam manis yang disukai oleh roda gigi.",
+      "Siswa harus bersabar ketika membuka baut roda yang sangat keras hati.",
+      "Kabel rem depan menyanyikan lagu gesekan saat ditarik keras."
+    ],
+    key: 1
+  },
+  {
+    id: 36,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Kalimat Efektif: 'Dalam pengujian tersebut menunjukkan bahwa baterai cepat panas.'",
+    question: "Perbaikan kalimat argumentatif di atas agar menjadi kalimat efektif berstruktur tepat (memiliki Subjek yang jelas) adalah...",
+    options: [
+      "Dalam pengujian tersebut menunjukkannya bahwa baterai cepat panas.",
+      "Pengujian tersebut menunjukkan bahwa baterai cepat panas.",
+      "Bahwa baterai cepat panas ditunjukkan dalam pengujian tersebut.",
+      "Pengujian tersebut menunjukkan baterai yang mana cepat panas.",
+      "Baterai cepat panas karena dalam pengujian menunjukkan hal itu."
+    ],
+    key: 1
+  },
+  {
+    id: 37,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PG",
+    stimulus: "Paragraf rumpang kohesi:\n'Siswa SMK dituntut memiliki keahlian teknis. [...], mereka juga wajib menguasai soft skills seperti komunikasi dan kerja sama tim agar mampu bertahan di dunia kerja.'",
+    question: "Kata hubung (konjungsi) antar-kalimat yang tepat untuk menjaga kohesi paragraf di atas adalah...",
+    options: [
+      "Selain itu",
+      "Meskipun begitu",
+      "Akan tetapi",
+      "Sebaliknya",
+      "Contohnya"
+    ],
+    key: 0
+  },
+  {
+    id: 38,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "BS",
+    stimulus: "Penggunaan konjungsi 'Namun' dan 'Akan tetapi' selalu diletakkan di awal kalimat dengan diikuti tanda koma untuk menyatakan pertentangan dengan kalimat sebelumnya.",
+    question: "Pernyataan: 'Kaidah penulisan konjungsi antarkalimat tersebut adalah BENAR.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 39,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "BS",
+    stimulus: "Kalimat: 'Menurut saya pribadi, warna cat mobil listrik ini amat sangat terlampau bagus sekali.'",
+    question: "Pernyataan: 'Kalimat di atas sudah memenuhi syarat kaidah kebahasaan kalimat efektif baku untuk teks argumentasi ilmiah.'",
+    options: ["BENAR", "SALAH"],
+    key: "SALAH"
+  },
+  {
+    id: 40,
+    competency: "Kaidah Kebahasaan Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Identifikasi konjungsi argumentatif dan kausalitas.",
+    question: "Pilih SEMUA kalimat yang menggunakan konjungsi kausalitas / argumentatif secara TEPAT!",
+    options: [
+      "A. Pembangkit listrik tenaga angin dibangun *karena* kecepatan angin di pantai Songgom stabil.",
+      "B. Pembacaan multimeter tidak akurat *sehingga* pengujian harus diulang.",
+      "C. Siswa memakai helm *sambil* membaca buku petunjuk bengkel.",
+      "D. *Oleh karena itu*, perbaikan sistem drainase bengkel harus selesai bulan ini.",
+      "E. Motor berjalan cepat *dan* mobil berhenti di lampu merah."
+    ],
+    key: [0, 1, 3]
+  },
+
+  // --- KOMPETENSI 5: POSTER TEKS ARGUMENTASI (Soal 41-50) ---
+  {
+    id: 41,
+    competency: "Poster Teks Argumentasi",
+    type: "PG",
+    stimulus: "DESKRIPSI POSTER:\nJudul Poster: 'KURANGI SAMPAH PLASTIK! Bawa Tumbler dari Rumah'\nVisual: Gambar botol minum isi ulang (tumbler) berwarna hijau bersinar, disandingkan dengan tumpukan botol plastik sekali pakai yang tersilang merah.\nTeks Tambahan: 'Satu kebiasaan kecil dari Anda, menghemat 365 botol plastik per tahun untuk bumi kita.'",
+    question: "Manakah argumen utama yang ingin disampaikan oleh poster tersebut?",
+    options: [
+      "Harga botol plastik sekali pakai makin mahal di kantin sekolah.",
+      "Membawa tumbler pribadi merupakan aksi nyata yang secara signifikan menekan jumlah limbah plastik.",
+      "Minum air putih dari tumbler dapat meningkatkan daya ingat siswa saat belajar.",
+      "Setiap siswa diwajibkan membeli tumbler merk tertentu dari sekolah.",
+      "Pemerintah akan menutup pabrik pembuat botol plastik sekali pakai."
+    ],
+    key: 1
+  },
+  {
+    id: 42,
+    competency: "Poster Teks Argumentasi",
+    type: "PG",
+    stimulus: "Slogan Poster A: 'Mari Jagalah Kebersihan Lingkungan Sekolah Kita Bersama-sama Ya!'\nSlogan Poster B: 'SATU SAMPAH DIBUANG PADA TEMPATNYA, SEJUTA KEHIDUPAN TERSELAMATKAN.'",
+    question: "Mengapa Slogan Poster B lebih efektif dan argumentatif dibanding Slogan Poster A?",
+    options: [
+      "Poster B lebih panjang kata-katanya.",
+      "Poster B menggunakan bahasa persuasif yang kuat dengan menonjolkan dampak hubungan sebab-akibat (aksi - akibat).",
+      "Poster A menggunakan kata 'Ya' yang ramah kepada pembaca.",
+      "Poster A cocok dipasang di papan pengumuman guru.",
+      "Poster B tidak menggunakan huruf kapital sama sekali."
+    ],
+    key: 1
+  },
+  {
+    id: 43,
+    competency: "Poster Teks Argumentasi",
+    type: "PG",
+    stimulus: "DESKRIPSI POSTER:\nVisual: Seorang siswa SMK memakai kacamata pengaman (safety goggles) dan memegang sertifikat uji kompetensi.\nTeks Utama: 'SIAP KERJA, SIAP BERKARYA! Lulusan SMK Berkompetensi Sertifikasi Industri.'\nTarget Audiens: Masyarakat umum, siswa SMP, dan dunia usaha/dunia industri (DUDI).",
+    question: "Tujuan utama pembuat poster argumentatif tersebut adalah...",
+    options: [
+      "Mengajak masyarakat untuk membeli alat kacamata pengaman.",
+      "Membuktikan dan meyakinkan publik bahwa lulusan SMK memiliki daya saing kerja yang unggul dan bersertifikat.",
+      "Menjelaskan tata cara pendaftaran ujian kompetensi di SMK.",
+      "Menyuruh siswa SMK memakai kacamata setiap hari di rumah.",
+      "Mengkritik siswa yang tidak memiliki sertifikat kompetensi."
+    ],
+    key: 1
+  },
+  {
+    id: 44,
+    competency: "Poster Teks Argumentasi",
+    type: "PG",
+    stimulus: "Dalam sebuah poster himbauan penghematan energi listrik di laboratorium SMK, desainer menampilkan gambar sakelar listrik yang terhubung dengan grafik penurunan biaya operasi.",
+    question: "Hubungan antara teks slogan 'MATIKAN LAMPU SAAT TIDAK DIGUNAKAN' dengan elemen visual tersebut adalah...",
+    options: [
+      "Visual berfungsi mengalihkan perhatian dari teks.",
+      "Visual memperkuat argumen teks dengan memperlihatkan dampak nyata penghematan listrik secara finansial.",
+      "Visual dan teks tidak memiliki keterkaitan tema.",
+      "Teks poster dibuat hanya untuk memenuhi ruang kosong visual.",
+      "Visual membuat poster terlihat rumit dan tidak berguna."
+    ],
+    key: 1
+  },
+  {
+    id: 45,
+    competency: "Poster Teks Argumentasi",
+    type: "BS",
+    stimulus: "Sebuah poster argumentatif yang baik cukup menampilkan gambar dekoratif yang bagus tanpa membutuhkan teks slogan atau data pendukung yang jelas.",
+    question: "Pernyataan: 'Pernyataan di atas adalah BENAR mengenai prinsip poster argumentatif.'",
+    options: ["BENAR", "SALAH"],
+    key: "SALAH"
+  },
+  {
+    id: 46,
+    competency: "Poster Teks Argumentasi",
+    type: "BS",
+    stimulus: "Slogan Poster: 'HEMAT ENERGI HARI INI, TERANGI MASA DEPAN NEGERI.'",
+    question: "Pernyataan: 'Slogan di atas memenuhi kaidah bahasa poster yang padat, berirama, komunikatif, dan bernilai argumen persuasif.'",
+    options: ["BENAR", "SALAH"],
+    key: "BENAR"
+  },
+  {
+    id: 47,
+    competency: "Poster Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Poster tentang 'Stop Perundungan (Bullying) di Sekolah'.\nTeks saat ini: 'Jangan bully teman. Bully itu dosa dan tidak baik.'\nDesainer ingin meningkatkan efektivitas argumen poster agar lebih kuat dan menyasar mental remaja SMK.",
+    question: "Pilih SEMUA rekomendasi perbaikan slogan / teks yang LEBIH ARGUMENTATIF dan PERSUASIF!",
+    options: [
+      "A. 'BEBAS PERUNDUNGAN, CIPTAKAN RUANG BELAJAR AMAN DAN PRESTASI MAKSIMAL!'",
+      "B. 'SUARA ANDA MERUPAKAN PERLINDUNGAN: LAPORKAN PERUNDUNGAN, SELAMATKAN MASA DEPAN TEMAN!'",
+      "C. 'BULLYING HANYA UNTUK ANGKATAN TUA'",
+      "D. 'PERUNDUNGAN MERUSAK MENTAL GENERASI MUDA: STOP HARI INI JUG A!'",
+      "E. 'KALAU DIBULLY BALAS SAJA KEMBALI'"
+    ],
+    key: [0, 1, 3]
+  },
+  {
+    id: 48,
+    competency: "Poster Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Analisis kelengkapan elemen poster argumentatif digital.",
+    question: "Pilih SEMUA unsur wajib yang harus ada pada POSTER ARGUMENTATIF yang efektif!",
+    options: [
+      "A. Judul / Slogan ringkas yang menarik perhatian.",
+      "B. Argumen ringkas atau data penjelas yang mendukung klaim.",
+      "C. Ilustrasi visual yang relevan dan memperkuat pesan teks.",
+      "D. Cerita cerpen 5 paragraf berukuran font kecil.",
+      "E. Tata letak (layout) dan kontras warna yang nyaman dibaca."
+    ],
+    key: [0, 1, 2, 4]
+  },
+  {
+    id: 49,
+    competency: "Poster Teks Argumentasi",
+    type: "PGK",
+    stimulus: "DESKRIPSI POSTER GAGAL:\nSebuah poster mengusung tema 'Budaya Membaca Buku Teknis di SMK'. Poster menggunakan 8 warna font yang berbeda, background penuh gambar ramai, serta ukuran teks penjelasan sangat kecil hingga tidak terbaca dari jarak 1 meter.",
+    question: "Pilih SEMUA KELEMAHAN utama dari poster di atas!",
+    options: [
+      "A. Kontras visual dan keterbacaan (readability) sangat buruk.",
+      "B. Terlalu banyak kombinasi warna sehingga merusak fokus pesan utama.",
+      "C. Pesan argumen tidak dapat tersampaikan dengan cepat kepada pembaca.",
+      "D. Terlalu sedikit gambar dekoratif di dalam poster.",
+      "E. Pemilihan jenis kertas poster terlalu tebal."
+    ],
+    key: [0, 1, 2]
+  },
+  {
+    id: 50,
+    competency: "Poster Teks Argumentasi",
+    type: "PGK",
+    stimulus: "Poster: 'BIJAK BERMEDSOS: TULIS REPUTASI, BUKAN PROVOKASI.'\nPoster ditujukan bagi siswa SMK Negeri 2 Songgom di era digital 2026.",
+    question: "Manakah argumen pendukung yang tepat untuk ditambahkan di bagian bawah poster tersebut?",
+    options: [
+      "A. Jejak digital di media sosial dipantau oleh tim HRD perusahaan saat seleksi kerja.",
+      "B. Unggahan positif membangun personal branding profesional siswa di LinkedIn dan Portofolio.",
+      "C. Membeli kuota internet sekolah sangat murah dan cepat.",
+      "D. Polusi informasi hoaks dapat menurunkan produktivitas belajar siswa.",
+      "E. Smartphone terbaru memiliki kamera beresolusi tinggi."
+    ],
+    key: [0, 1, 3]
+  }
+];
+
+// Utility to load SheetJS XLSX dynamically
+const loadXLSXScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) return resolve(window.XLSX);
+    const script = document.createElement('script');
+    script.src = "https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js";
+    script.onload = () => resolve(window.XLSX);
+    script.onerror = () => reject(new Error("Gagal mengunduh pustaka Excel SheetJS"));
+    document.head.appendChild(script);
+  });
+};
+
+// Local Storage Key
+const STORAGE_KEY = 'EXAM_SMK_BAHASA_INDONESIA_2026_RESULTS';
+const ACTIVE_SESSION_KEY = 'EXAM_SMK_BAHASA_INDONESIA_2026_ACTIVE_SESSION';
+
+export default function App() {
+  // Navigation & Identity State
+  const [view, setView] = useState('home'); // home | identity | confirm_identity | instructions | exam | result | teacher_login | teacher_dashboard
+  const [student, setStudent] = useState({ name: '', nis: '' });
+  const [identityError, setIdentityError] = useState('');
+
+  // Active Exam State
+  const [answers, setAnswers] = useState({}); // { [qId]: answer }
+  const [flagged, setFlagged] = useState({}); // { [qId]: boolean }
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(7200); // 120 minutes = 7200s
+  const [examStarted, setExamStarted] = useState(false);
+  const [startTimeStamp, setStartTimeStamp] = useState(null);
+  const [warningCount, setWarningCount] = useState(0);
+  const [fullscreenExitCount, setFullscreenExitCount] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Modals & Warnings
+  const [warningModal, setWarningModal] = useState({ open: false, title: '', message: '', count: 0 });
+  const [submitConfirmModal, setSubmitConfirmModal] = useState(false);
+
+  // Participant Final Result State
+  const [finalResult, setFinalResult] = useState(null);
+
+  // Teacher Dashboard State
+  const [teacherAuth, setTeacherAuth] = useState(false);
+  const [teacherLoginInput, setTeacherLoginInput] = useState({ username: '', password: '' });
+  const [teacherLoginError, setTeacherLoginError] = useState('');
+  const [resultsList, setResultsList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('ALL');
+  const [sortKey, setSortKey] = useState('date_desc');
+  const [selectedStudentDetail, setSelectedStudentDetail] = useState(null);
+  const [resetConfirmModal, setResetConfirmModal] = useState(false);
+  const [deleteIdConfirm, setDeleteIdConfirm] = useState(null);
+
+  useEffect(() => {
+    // Load existing teacher results
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setResultsList(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Error loading saved results", e);
+    }
+
+    // Check if active exam session exists
+    try {
+      const active = localStorage.getItem(ACTIVE_SESSION_KEY);
+      if (active) {
+        const parsed = JSON.parse(active);
+        if (parsed && !parsed.completed && parsed.timeLeft > 0) {
+          setStudent(parsed.student);
+          setAnswers(parsed.answers || {});
+          setFlagged(parsed.flagged || {});
+          setCurrentQIndex(parsed.currentQIndex || 0);
+          setTimeLeft(parsed.timeLeft);
+          setWarningCount(parsed.warningCount || 0);
+          setFullscreenExitCount(parsed.fullscreenExitCount || 0);
+          setStartTimeStamp(parsed.startTimeStamp);
+          setExamStarted(true);
+          setView('exam');
+        }
+      }
+    } catch (e) {
+      console.error("Error loading active session", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (examStarted && view === 'exam') {
+      const sessionData = {
+        student,
+        answers,
+        flagged,
+        currentQIndex,
+        timeLeft,
+        warningCount,
+        fullscreenExitCount,
+        startTimeStamp,
+        completed: false
+      };
+      localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(sessionData));
+    }
+  }, [examStarted, view, answers, flagged, currentQIndex, timeLeft, warningCount, fullscreenExitCount, student, startTimeStamp]);
+
+  useEffect(() => {
+    let timerInterval = null;
+    if (examStarted && view === 'exam') {
+      timerInterval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerInterval);
+            handleFinishExam(true); // auto submit on 00:00
+            return 0;
+          }
+
+          // Trigger time alerts at exactly 15 mins (900s) and 5 mins (300s)
+          if (prev === 900) {
+            setWarningModal({
+              open: true,
+              title: "⚠️ PERINGATAN WAKTU",
+              message: "Waktu tersisa 15 menit. Silakan periksa kembali jawaban Anda.",
+              count: null
+            });
+          } else if (prev === 300) {
+            setWarningModal({
+              open: true,
+              title: "⚠️ PERHATIAN PENTING!",
+              message: "Waktu ujian tinggal 5 menit! Jawaban akan dikumpulkan otomatis jika waktu habis.",
+              count: null
+            });
+          }
+
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timerInterval);
+  }, [examStarted, view]);
+
+  useEffect(() => {
+    if (!examStarted || view !== 'exam') return;
+
+    let lastBlurTime = 0;
+
+    const handleVisibilityOrBlur = () => {
+      const now = Date.now();
+      // Debounce blur & visibility events within 1 second
+      if (now - lastBlurTime < 1000) return;
+      lastBlurTime = now;
+
+      setWarningCount((prevCount) => {
+        const newCount = prevCount + 1;
+        let msg = "";
+        if (newCount === 1) {
+          msg = "Anda terdeteksi meninggalkan halaman ujian. Silakan kembali ke halaman ujian.";
+        } else if (newCount === 2) {
+          msg = "Anda kembali meninggalkan halaman ujian. Aktivitas ini tercatat oleh sistem.";
+        } else {
+          msg = `Anda telah meninggalkan halaman ujian sebanyak ${newCount} kali. Aktivitas ini tercatat dan akan dilaporkan kepada guru.`;
+        }
+
+        setWarningModal({
+          open: true,
+          title: "⚠️ PERINGATAN UNTUK PESERTA!",
+          message: msg,
+          count: newCount
+        });
+
+        return newCount;
+      });
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        handleVisibilityOrBlur();
+      }
+    };
+
+    const onWindowBlur = () => {
+      handleVisibilityOrBlur();
+    };
+
+    const onFullScreenChange = () => {
+      const fs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      setIsFullscreen(fs);
+      if (!fs && examStarted && view === 'exam') {
+        setFullscreenExitCount((prev) => prev + 1);
+        setWarningModal({
+          open: true,
+          title: "⚠️ KELUAR MODE LAYAR PENUH",
+          message: "Anda telah keluar dari mode layar penuh. Silakan kembali ke mode layar penuh untuk melanjutkan ujian.",
+          count: null
+        });
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("blur", onWindowBlur);
+    document.addEventListener("fullscreenchange", onFullScreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullScreenChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("blur", onWindowBlur);
+      document.removeEventListener("fullscreenchange", onFullScreenChange);
+      document.removeEventListener("webkitfullscreenchange", onFullScreenChange);
+    };
+  }, [examStarted, view]);
+
+  const requestFullScreen = () => {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().catch(() => {});
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    const pad = (n) => (n < 10 ? '0' + n : n);
+    if (hrs > 0) {
+      return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    }
+    return `${pad(mins)}:${pad(secs)}`;
+  };
+
+  const handleIdentitySubmit = (e) => {
+    e.preventDefault();
+    if (!student.name.trim() || !student.nis.trim()) {
+      setIdentityError("Nama Peserta dan NIS wajib diisi sebelum melanjutkan.");
+      return;
+    }
+    setIdentityError("");
+    setView('confirm_identity');
+  };
+
+  const handleStartExamReady = () => {
+    requestFullScreen();
+    setExamStarted(true);
+    setStartTimeStamp(new Date().toISOString());
+    setTimeLeft(7200);
+    setWarningCount(0);
+    setFullscreenExitCount(0);
+    setAnswers({});
+    setFlagged({});
+    setCurrentQIndex(0);
+    setView('exam');
+  };
+
+  const handleSelectAnswer = (qId, optionVal, qType) => {
+    setAnswers((prev) => {
+      const copy = { ...prev };
+      if (qType === 'PG' || qType === 'BS') {
+        copy[qId] = optionVal;
+      } else if (qType === 'PGK') {
+        const currentArr = Array.isArray(copy[qId]) ? copy[qId] : [];
+        if (currentArr.includes(optionVal)) {
+          copy[qId] = currentArr.filter((val) => val !== optionVal);
+        } else {
+          copy[qId] = [...currentArr, optionVal].sort((a, b) => a - b);
+        }
+      }
+      return copy;
+    });
+  };
+
+  const toggleFlag = (qId) => {
+    setFlagged((prev) => ({
+      ...prev,
+      [qId]: !prev[qId]
+    }));
+  };
+
+  const handleFinishExam = (isAutoSubmit = false) => {
+    // Grade calculation
+    let correctCount = 0;
+    let incorrectCount = 0;
+    let unansweredCount = 0;
+
+    QUESTIONS_DATABASE.forEach((q) => {
+      const studentAns = answers[q.id];
+
+      if (studentAns === undefined || studentAns === null || (Array.isArray(studentAns) && studentAns.length === 0)) {
+        unansweredCount++;
+        return;
+      }
+
+      if (q.type === 'PG') {
+        if (studentAns === q.key) {
+          correctCount++;
+        } else {
+          incorrectCount++;
+        }
+      } else if (q.type === 'BS') {
+        if (studentAns === q.key) {
+          correctCount++;
+        } else {
+          incorrectCount++;
+        }
+      } else if (q.type === 'PGK') {
+        const keyArr = Array.isArray(q.key) ? q.key : [];
+        const ansArr = Array.isArray(studentAns) ? studentAns : [];
+        // Exact combination match for full points
+        const isExactMatch =
+          keyArr.length === ansArr.length &&
+          keyArr.every((val) => ansArr.includes(val));
+
+        if (isExactMatch) {
+          correctCount++;
+        } else {
+          incorrectCount++;
+        }
+      }
+    });
+
+    const totalQuestions = QUESTIONS_DATABASE.length;
+    const score = Math.round((correctCount / totalQuestions) * 100);
+
+    let category = '';
+    if (score >= 90) category = 'Sangat Baik';
+    else if (score >= 80) category = 'Baik';
+    else if (score >= 70) category = 'Cukup';
+    else category = 'Perlu Peningkatan';
+
+    const endTime = new Date();
+    const durationSeconds = startTimeStamp ? Math.round((endTime - new Date(startTimeStamp)) / 1000) : (7200 - timeLeft);
+
+    const resultRecord = {
+      id: 'RES_' + Date.now(),
+      name: student.name.trim(),
+      nis: student.nis.trim(),
+      school: 'SMK Negeri 2 Songgom',
+      subject: 'Bahasa Indonesia',
+      classYear: 'XI SMK / 2026',
+      totalQuestions,
+      correct: correctCount,
+      incorrect: incorrectCount,
+      unanswered: unansweredCount,
+      score,
+      category,
+      durationSeconds,
+      formattedDuration: formatTime(durationSeconds),
+      startTime: startTimeStamp || new Date().toISOString(),
+      endTime: endTime.toISOString(),
+      warningCount,
+      fullscreenExitCount,
+      status: 'Selesai'
+    };
+
+    // Save to LocalStorage results history
+    try {
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const updated = [resultRecord, ...existing];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      setResultsList(updated);
+    } catch (e) {
+      console.error("Failed saving final result", e);
+    }
+
+    // Clear active session
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
+    setExamStarted(false);
+    setSubmitConfirmModal(false);
+    setFinalResult(resultRecord);
+    setView('result');
+  };
+
+  const handleTeacherLogin = (e) => {
+    e.preventDefault();
+    if (teacherLoginInput.username === 'guru' && teacherLoginInput.password === 'guru2026') {
+      setTeacherAuth(true);
+      setTeacherLoginError('');
+      setView('teacher_dashboard');
+    } else if (teacherLoginInput.username === 'admin' && teacherLoginInput.password === 'admin2026') {
+      setTeacherAuth(true);
+      setTeacherLoginError('');
+      setView('teacher_dashboard');
+    } else {
+      setTeacherLoginError('Username atau Password Guru salah. Silakan coba lagi.');
+    }
+  };
+
+  const filteredResults = useMemo(() => {
+    return resultsList.filter((item) => {
+      const matchSearch =
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.nis.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchCategory = filterCategory === 'ALL' || item.category === filterCategory;
+      return matchSearch && matchCategory;
+    }).sort((a, b) => {
+      if (sortKey === 'score_desc') return b.score - a.score;
+      if (sortKey === 'score_asc') return a.score - b.score;
+      if (sortKey === 'name_asc') return a.name.localeCompare(b.name);
+      return new Date(b.endTime) - new Date(a.endTime);
+    });
+  }, [resultsList, searchTerm, filterCategory, sortKey]);
+
+  const teacherStats = useMemo(() => {
+    if (resultsList.length === 0) {
+      return {
+        total: 0,
+        avgScore: 0,
+        highScore: 0,
+        lowScore: 0,
+        passedCount: 0,
+        failedCount: 0,
+        totalWarnings: 0,
+        categories: { 'Sangat Baik': 0, 'Baik': 0, 'Cukup': 0, 'Perlu Peningkatan': 0 }
+      };
+    }
+
+    const total = resultsList.length;
+    const scores = resultsList.map((r) => r.score);
+    const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / total);
+    const highScore = Math.max(...scores);
+    const lowScore = Math.min(...scores);
+    const passedCount = resultsList.filter((r) => r.score >= 75).length;
+    const failedCount = total - passedCount;
+    const totalWarnings = resultsList.reduce((acc, r) => acc + (r.warningCount || 0), 0);
+
+    const categories = { 'Sangat Baik': 0, 'Baik': 0, 'Cukup': 0, 'Perlu Peningkatan': 0 };
+    resultsList.forEach((r) => {
+      if (categories[r.category] !== undefined) {
+        categories[r.category]++;
+      }
+    });
+
+    return { total, avgScore, highScore, lowScore, passedCount, failedCount, totalWarnings, categories };
+  }, [resultsList]);
+
+  const handleDownloadExcel = async () => {
+    try {
+      const XLSXLib = await loadXLSXScript();
+
+      const excelData = resultsList.map((item, index) => ({
+        "No": index + 1,
+        "Nama Peserta": item.name,
+        "NIS": item.nis,
+        "Sekolah": item.school,
+        "Mata Pelajaran": item.subject,
+        "Kelas / Tahun": item.classYear,
+        "Jumlah Soal": item.totalQuestions,
+        "Benar": item.correct,
+        "Salah": item.incorrect,
+        "Tidak Dijawab": item.unanswered,
+        "Nilai": item.score,
+        "Kategori": item.category,
+        "Durasi Pengerjaan": item.formattedDuration,
+        "Waktu Mulai": new Date(item.startTime).toLocaleString('id-ID'),
+        "Waktu Selesai": new Date(item.endTime).toLocaleString('id-ID'),
+        "Jumlah Peringatan Tab": item.warningCount || 0,
+        "Jumlah Keluar Fullscreen": item.fullscreenExitCount || 0,
+        "Status Ujian": item.status
+      }));
+
+      const worksheet = XLSXLib.utils.json_to_sheet(excelData);
+
+      // Set column widths for proper alignment
+      worksheet['!cols'] = [
+        { wch: 5 },  // No
+        { wch: 25 }, // Nama
+        { wch: 15 }, // NIS
+        { wch: 22 }, // Sekolah
+        { wch: 20 }, // Mapel
+        { wch: 15 }, // Kelas
+        { wch: 12 }, // Total
+        { wch: 8 },  // Benar
+        { wch: 8 },  // Salah
+        { wch: 14 }, // Kosong
+        { wch: 8 },  // Nilai
+        { wch: 18 }, // Kategori
+        { wch: 18 }, // Durasi
+        { wch: 22 }, // Mulai
+        { wch: 22 }, // Selesai
+        { wch: 20 }, // Warnings
+        { wch: 22 }, // FS Exit
+        { wch: 12 }  // Status
+      ];
+
+      const workbook = XLSXLib.utils.book_new();
+      XLSXLib.utils.book_append_sheet(workbook, worksheet, "Rekap Nilai");
+
+      // Save file
+      XLSXLib.writeFile(workbook, "Rekap_Ulangan_Harian_Bahasa_Indonesia_XI_SMK_2026.xlsx");
+    } catch (err) {
+      alert("Gagal membuat file Excel: " + err.message);
+    }
+  };
+
+  const handleDeleteStudent = (id) => {
+    const updated = resultsList.filter((r) => r.id !== id);
+    setResultsList(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setDeleteIdConfirm(null);
+    if (selectedStudentDetail && selectedStudentDetail.id === id) {
+      setSelectedStudentDetail(null);
+    }
+  };
+
+  const handleResetAllData = () => {
+    setResultsList([]);
+    localStorage.removeItem(STORAGE_KEY);
+    setResetConfirmModal(false);
+    setSelectedStudentDetail(null);
+  };
+
+  const currentQ = QUESTIONS_DATABASE[currentQIndex];
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
+      {/* HEADER BAR */}
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white shadow-lg sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/10 p-2 rounded-xl backdrop-blur-md">
+              <svg className="w-7 h-7 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight leading-tight">ULANGAN HARIAN</h1>
+              <p className="text-xs text-blue-200">Bahasa Indonesia – SMK Kelas XI (Tahun 2026)</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 text-xs sm:text-sm">
+            {view === 'exam' ? (
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={requestFullScreen}
+                  className="hidden sm:inline-flex items-center px-2.5 py-1.5 rounded-lg bg-blue-700/60 hover:bg-blue-600 text-white border border-blue-400/30 transition text-xs"
+                >
+                  ⛶ Mode Layar Penuh
+                </button>
+                <div className="bg-slate-900/80 backdrop-blur-md text-teal-300 font-mono text-sm sm:text-base px-3 py-1.5 rounded-xl border border-teal-500/40 shadow-inner font-semibold flex items-center space-x-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>{formatTime(timeLeft)}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                {teacherAuth && (
+                  <button
+                    onClick={() => setView('teacher_dashboard')}
+                    className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium transition text-xs sm:text-sm shadow"
+                  >
+                    Dashboard Guru
+                  </button>
+                )}
+                <button
+                  onClick={() => setView(teacherAuth ? 'teacher_dashboard' : 'teacher_login')}
+                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition text-xs sm:text-sm"
+                >
+                  {teacherAuth ? 'Area Guru (Aktif)' : 'Login Guru'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN CONTAINER CONTENT */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
+
+        {/* ========================================================= */}
+        {/* VIEW 1: HOME PAGE */}
+        {/* ========================================================= */}
+        {}
+        {view === 'home' && (
+          <div className="max-w-4xl mx-auto w-full space-y-8 my-auto">
+            {/* HERO BANNER */}
+            <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div className="relative z-10 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                  Evaluasi Pembelajaran Berbasis HOTS
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    ULANGAN HARIAN BAHASA INDONESIA
+                  </h2>
+                  <p className="text-base sm:text-lg text-slate-600 font-medium">
+                    Mata Pelajaran Bahasa Indonesia – Jenjang SMK Kelas XI
+                  </p>
+                </div>
+
+                {/* SCHOOL & TEACHER META */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <p className="text-xs text-slate-500 font-medium">Guru Mata Pelajaran</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">Dwi Harry Pambudi, M.Pd</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <p className="text-xs text-slate-500 font-medium">Sekolah</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">SMK Negeri 2 Songgom</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <p className="text-xs text-slate-500 font-medium">Tahun Akademik</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">2026</p>
+                  </div>
+                </div>
+
+                <div className="bg-teal-50/70 border border-teal-200 rounded-2xl p-4 text-teal-900 text-sm">
+                  <span className="font-bold">Materi Ujian:</span> Teks Argumentasi & Poster Teks Argumentasi
+                </div>
+
+                {/* EXAM INFO CARDS */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 text-center">
+                    <div className="text-2xl font-extrabold text-blue-700">50</div>
+                    <div className="text-xs text-slate-600 font-medium mt-0.5">Total Soal</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-center">
+                    <div className="text-2xl font-extrabold text-emerald-700">120</div>
+                    <div className="text-xs text-slate-600 font-medium mt-0.5">Menit Durasi</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-center">
+                    <div className="text-2xl font-extrabold text-indigo-700">3 Bentuk</div>
+                    <div className="text-xs text-slate-600 font-medium mt-0.5">PG, B/S, PGK</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 text-center">
+                    <div className="text-2xl font-extrabold text-amber-700">HOTS</div>
+                    <div className="text-xs text-slate-600 font-medium mt-0.5">Level Berpikir</div>
+                  </div>
+                </div>
+
+                {/* ACTION BUTTON */}
+                <div className="pt-4 flex flex-col sm:flex-row gap-4 items-center">
+                  <button
+                    onClick={() => setView('identity')}
+                    className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3"
+                  >
+                    <span>MULAI ULANGAN</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={() => setView(teacherAuth ? 'teacher_dashboard' : 'teacher_login')}
+                    className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-base transition flex items-center justify-center gap-2 border border-slate-300/80"
+                  >
+                    <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span>Dashboard Guru</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 2: FORM IDENTITAS PESERTA */}
+        {/* ========================================================= */}
+        {}
+        {view === 'identity' && (
+          <div className="max-w-xl mx-auto w-full my-auto">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-2xl font-extrabold text-slate-900">IDENTITAS PESERTA</h2>
+                <p className="text-sm text-slate-500 mt-1">Lengkapi data diri Anda secara jujur dan akurat sebelum memulai ujian.</p>
+              </div>
+
+              {identityError && (
+                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-center gap-3">
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{identityError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleIdentitySubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Nama Peserta Lengkap <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    value={student.name}
+                    onChange={(e) => setStudent({ ...student, name: e.target.value })}
+                    placeholder="Contoh: Ahmad Rizky Rahmadani"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-slate-900 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Nomor Induk Siswa (NIS) <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    value={student.nis}
+                    onChange={(e) => setStudent({ ...student, nis: e.target.value })}
+                    placeholder="Contoh: 202611042"
+                    className="w-full px-4 py-3.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-slate-900 font-medium"
+                  />
+                </div>
+
+                <div className="pt-4 flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setView('home')}
+                    className="px-6 py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 transition"
+                  >
+                    Kembali
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-500/20 transition"
+                  >
+                    LANJUTKAN
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 3: CONFIRMATION IDENTITAS */}
+        {/* ========================================================= */}
+        {}
+        {view === 'confirm_identity' && (
+          <div className="max-w-xl mx-auto w-full my-auto">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+              <div className="text-center space-y-2">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                  ✓
+                </div>
+                <h2 className="text-2xl font-extrabold text-slate-900">KONFIRMASI DATA PESERTA</h2>
+                <p className="text-sm text-slate-600">Pastikan Nama dan NIS sudah benar. Data tersebut akan digunakan untuk hasil dan rekap nilai.</p>
+              </div>
+
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-xs text-slate-500 uppercase font-semibold">Nama Peserta</span>
+                  <span className="text-sm font-bold text-slate-800">{student.name}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-xs text-slate-500 uppercase font-semibold">NIS</span>
+                  <span className="text-sm font-bold text-slate-800">{student.nis}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-xs text-slate-500 uppercase font-semibold">Mata Pelajaran</span>
+                  <span className="text-sm font-bold text-slate-800">Bahasa Indonesia (SMK XI)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-slate-500 uppercase font-semibold">Sekolah / Tahun</span>
+                  <span className="text-sm font-bold text-slate-800">SMK Negeri 2 Songgom / 2026</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 pt-2">
+                <button
+                  onClick={() => setView('identity')}
+                  className="w-1/2 py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 transition text-center"
+                >
+                  KEMBALI
+                </button>
+                <button
+                  onClick={() => setView('instructions')}
+                  className="w-1/2 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-md shadow-teal-500/20 transition text-center"
+                >
+                  PETUNJUK TES
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 4: PETUNJUK PENGERJAAN */}
+        {/* ========================================================= */}
+        {}
+        {view === 'instructions' && (
+          <div className="max-w-3xl mx-auto w-full my-auto space-y-6">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-2xl font-extrabold text-slate-900">PETUNJUK PENGERJAAN</h2>
+                <p className="text-sm text-slate-500 mt-1">Harap baca seluruh petunjuk berikut sebelum memulai timer ujian.</p>
+              </div>
+
+              <div className="space-y-3 text-slate-700 text-sm sm:text-base">
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+                  <p>Bacalah setiap teks atau stimulus bacaan dengan teliti sebelum menjawab.</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                  <p>Soal terdiri dari <b>50 Soal</b> (Pilihan Ganda 5 opsi, Benar/Salah, dan Pilihan Ganda Kompleks).</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                  <p>Pada <b>Pilihan Ganda Kompleks</b>, jawaban benar dapat lebih dari satu. Pilih semua opsi yang menurut Anda tepat.</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                  <p>Waktu pengerjaan adalah <b>120 menit</b>. Timer akan otomatis countdown secara real-time.</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">5</span>
+                  <p>Jawaban tersimpan secara otomatis setiap kali Anda memilih atau mengubah opsi jawaban.</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0">6</span>
+                  <p className="font-semibold text-amber-900">
+                    Sistem dilengkapi perlindungan <b>Anti-Cheat Warning</b>. Berpindah tab, meminimalkan browser, atau keluar dari layar fokus akan dicatat sebagai pelanggaran dan dilaporkan kepada guru.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">7</span>
+                  <p>Setelah waktu habis, jawaban akan otomatis dikumpulkan oleh sistem.</p>
+                </div>
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => setView('identity')}
+                  className="px-6 py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 transition"
+                >
+                  KEMBALI
+                </button>
+                <button
+                  onClick={handleStartExamReady}
+                  className="flex-1 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-lg shadow-lg shadow-teal-500/25 transition flex items-center justify-center gap-2"
+                >
+                  <span>SAYA SIAP, MULAI TES</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 5: EXAM APPLICATION INTERFACE */}
+        {/* ========================================================= */}
+        {}
+        {view === 'exam' && currentQ && (
+          <div className="space-y-6">
+            {/* TOP BAR EXAM STATUS */}
+            <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-bold text-xs sm:text-sm">
+                  Soal {currentQIndex + 1} dari {QUESTIONS_DATABASE.length}
+                </span>
+                <span className="text-xs text-slate-500 font-medium hidden sm:inline-block">
+                  Kompetensi: <strong className="text-slate-700">{currentQ.competency}</strong>
+                </span>
+              </div>
+
+              {/* PROGRESS BAR */}
+              <div className="flex items-center space-x-3 flex-1 max-w-xs">
+                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${((currentQIndex + 1) / QUESTIONS_DATABASE.length) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs font-bold text-slate-600">
+                  {Math.round(((currentQIndex + 1) / QUESTIONS_DATABASE.length) * 100)}%
+                </span>
+              </div>
+
+              {/* WARNING COUNTER BADGE */}
+              {warningCount > 0 && (
+                <div className="px-3 py-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                  <span>⚠️ Peringatan Tab:</span>
+                  <span className="bg-amber-600 text-white px-1.5 py-0.5 rounded-md">{warningCount}x</span>
+                </div>
+              )}
+            </div>
+
+            {/* QUESTION CONTENT CONTAINER */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+              {/* MAIN QUESTION DISPLAY CARD */}
+              <div className="lg:col-span-3 space-y-6">
+                <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+
+                  {/* QUESTION TYPE BADGE */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Tipe: {currentQ.type === 'PG' ? 'Pilihan Ganda (1 Jawaban)' : currentQ.type === 'BS' ? 'Benar / Salah' : 'Pilihan Ganda Kompleks (Bisa >1 Jawaban)'}
+                    </span>
+                    <button
+                      onClick={() => toggleFlag(currentQ.id)}
+                      className={`px-3 py-1.5 rounded-xl font-semibold text-xs flex items-center gap-1.5 transition ${
+                        flagged[currentQ.id]
+                          ? 'bg-amber-500 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
+                      </svg>
+                      <span>{flagged[currentQ.id] ? 'Ditandai Ragu-Ragu' : 'Tanda Ragu-Ragu'}</span>
+                    </button>
+                  </div>
+
+                  {/* STIMULUS READOUT */}
+                  {currentQ.stimulus && (
+                    <div className="bg-slate-50 border-l-4 border-blue-600 p-5 rounded-r-2xl space-y-2">
+                      <div className="text-xs font-bold text-blue-900 uppercase tracking-wide">STIMULUS BACAAN / TEKS:</div>
+                      <p className="text-slate-800 text-base leading-relaxed whitespace-pre-line font-serif">
+                        {currentQ.stimulus}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* QUESTION TEXT */}
+                  <div className="text-slate-900 font-semibold text-lg sm:text-xl leading-snug">
+                    {currentQ.question}
+                  </div>
+
+                  {/* OPTIONS LIST */}
+                  <div className="space-y-3 pt-2">
+
+                    {/* PILIHAN GANDA (PG) */}
+                    {currentQ.type === 'PG' && (
+                      <div className="space-y-3">
+                        {currentQ.options.map((opt, idx) => {
+                          const isSelected = answers[currentQ.id] === idx;
+                          const labels = ['A', 'B', 'C', 'D', 'E'];
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => handleSelectAnswer(currentQ.id, idx, 'PG')}
+                              className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start gap-4 ${
+                                isSelected
+                                  ? 'bg-blue-50 border-blue-500 ring-2 ring-blue-500/20 text-blue-950 font-semibold shadow-sm'
+                                  : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                              }`}
+                            >
+                              <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition ${
+                                isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
+                              }`}>
+                                {labels[idx]}
+                              </span>
+                              <span className="mt-1 text-sm sm:text-base leading-relaxed">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* BENAR / SALAH (BS) */}
+                    {currentQ.type === 'BS' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {['BENAR', 'SALAH'].map((val) => {
+                          const isSelected = answers[currentQ.id] === val;
+                          const isBenar = val === 'BENAR';
+                          return (
+                            <button
+                              key={val}
+                              onClick={() => handleSelectAnswer(currentQ.id, val, 'BS')}
+                              className={`p-5 rounded-2xl border text-center font-bold text-lg transition shadow-sm ${
+                                isSelected
+                                  ? isBenar
+                                    ? 'bg-emerald-600 text-white border-emerald-600 ring-4 ring-emerald-500/20'
+                                    : 'bg-rose-600 text-white border-rose-600 ring-4 ring-rose-500/20'
+                                  : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                              }`}
+                            >
+                              {val}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* PILIHAN GANDA KOMPLEKS (PGK) */}
+                    {currentQ.type === 'PGK' && (
+                      <div className="space-y-3">
+                        <p className="text-xs text-blue-700 font-semibold italic mb-2">
+                          * Petunjuk: Pilih semua opsi jawaban yang menurut Anda benar (Checkbox).
+                        </p>
+                        {currentQ.options.map((opt, idx) => {
+                          const selectedArr = Array.isArray(answers[currentQ.id]) ? answers[currentQ.id] : [];
+                          const isChecked = selectedArr.includes(idx);
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => handleSelectAnswer(currentQ.id, idx, 'PGK')}
+                              className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start gap-4 ${
+                                isChecked
+                                  ? 'bg-indigo-50 border-indigo-500 ring-2 ring-indigo-500/20 text-indigo-950 font-semibold shadow-sm'
+                                  : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                              }`}
+                            >
+                              <div className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition ${
+                                isChecked ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white'
+                              }`}>
+                                {isChecked && <span className="text-sm font-bold">✓</span>}
+                              </div>
+                              <span className="text-sm sm:text-base leading-relaxed">{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* BOTTOM NAVIGATION BUTTONS */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                    <button
+                      disabled={currentQIndex === 0}
+                      onClick={() => setCurrentQIndex((prev) => Math.max(0, prev - 1))}
+                      className="px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-2"
+                    >
+                      <span>← SEBELUMNYA</span>
+                    </button>
+
+                    <button
+                      onClick={() => toggleFlag(currentQ.id)}
+                      className={`px-4 py-3 rounded-xl font-semibold text-sm transition ${
+                        flagged[currentQ.id]
+                          ? 'bg-amber-500 text-white'
+                          : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                      }`}
+                    >
+                      RAGU-RAGU
+                    </button>
+
+                    {currentQIndex < QUESTIONS_DATABASE.length - 1 ? (
+                      <button
+                        onClick={() => setCurrentQIndex((prev) => Math.min(QUESTIONS_DATABASE.length - 1, prev + 1))}
+                        className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-500/20 transition flex items-center gap-2"
+                      >
+                        <span>SELANJUTNYA →</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setSubmitConfirmModal(true)}
+                        className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold shadow-md shadow-emerald-500/20 transition flex items-center gap-2"
+                      >
+                        <span>KUMPULKAN JAWABAN</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* SIDEBAR QUESTION GRID NAVIGATION */}
+              <div className="lg:col-span-1 space-y-6">
+                <div className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 space-y-4 sticky top-20">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h3 className="font-bold text-slate-800 text-base">Navigasi Soal</h3>
+                    <span className="text-xs font-semibold text-slate-500">
+                      {Object.keys(answers).length} / 50 Terjawab
+                    </span>
+                  </div>
+
+                  {/* LEGEND BADGES */}
+                  <div className="grid grid-cols-2 gap-2 text-xs font-medium text-slate-600">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-emerald-500"></span>
+                      <span>Dijawab</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-amber-400"></span>
+                      <span>Ragu-Ragu</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-slate-200"></span>
+                      <span>Belum</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-blue-600"></span>
+                      <span>Aktif</span>
+                    </div>
+                  </div>
+
+                  {/* GRID NUMBERS */}
+                  <div className="grid grid-cols-5 gap-2 pt-2 max-h-96 overflow-y-auto pr-1">
+                    {QUESTIONS_DATABASE.map((q, idx) => {
+                      const isAns = answers[q.id] !== undefined && answers[q.id] !== null && (!Array.isArray(answers[q.id]) || answers[q.id].length > 0);
+                      const isFlag = flagged[q.id];
+                      const isActive = idx === currentQIndex;
+
+                      let btnStyle = "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200";
+                      if (isActive) {
+                        btnStyle = "bg-blue-600 text-white ring-2 ring-blue-600/40 font-extrabold border-blue-600";
+                      } else if (isFlag) {
+                        btnStyle = "bg-amber-400 text-amber-950 font-bold border-amber-500";
+                      } else if (isAns) {
+                        btnStyle = "bg-emerald-500 text-white font-bold border-emerald-600";
+                      }
+
+                      return (
+                        <button
+                          key={q.id}
+                          onClick={() => setCurrentQIndex(idx)}
+                          className={`h-10 rounded-xl text-xs flex items-center justify-center transition border ${btnStyle}`}
+                        >
+                          {String(idx + 1).padStart(2, '0')}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* SUBMIT BUTTON IN SIDEBAR */}
+                  <div className="pt-4 border-t border-slate-100">
+                    <button
+                      onClick={() => setSubmitConfirmModal(true)}
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow transition"
+                    >
+                      KUMPULKAN JAWABAN
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 6: PARTICIPANT RESULT PAGE */}
+        {/* ========================================================= */}
+        {}
+        {view === 'result' && finalResult && (
+          <div className="max-w-2xl mx-auto w-full my-auto space-y-6">
+            <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-100 text-center space-y-6 relative overflow-hidden">
+
+              <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
+                ✓
+              </div>
+
+              <div>
+                <h2 className="text-3xl font-extrabold text-slate-900">UJIAN SELESAI</h2>
+                <p className="text-slate-500 text-sm mt-1">Terima kasih telah menyelesaikan Ulangan Harian Bahasa Indonesia.</p>
+              </div>
+
+              {/* SCORE BADGE */}
+              <div className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-3xl p-6 shadow-lg space-y-2 max-w-sm mx-auto">
+                <p className="text-xs uppercase tracking-widest text-blue-200 font-semibold">NILAI AKHIR ANDA</p>
+                <div className="text-5xl font-black text-teal-300">{finalResult.score}</div>
+                <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-blue-100">
+                  Kategori: {finalResult.category}
+                </div>
+              </div>
+
+              {/* DETAILED STATS */}
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-left space-y-3 text-sm">
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Nama Peserta</span>
+                  <span className="font-bold text-slate-800">{finalResult.name}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">NIS</span>
+                  <span className="font-bold text-slate-800">{finalResult.nis}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Jumlah Soal</span>
+                  <span className="font-bold text-slate-800">{finalResult.totalQuestions} Soal</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Jawaban Benar</span>
+                  <span className="font-bold text-emerald-600">{finalResult.correct} Soal</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Jawaban Salah</span>
+                  <span className="font-bold text-rose-600">{finalResult.incorrect} Soal</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Tidak Dijawab</span>
+                  <span className="font-bold text-slate-600">{finalResult.unanswered} Soal</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-200 pb-2">
+                  <span className="text-slate-500 font-medium">Durasi Pengerjaan</span>
+                  <span className="font-bold text-slate-800">{finalResult.formattedDuration}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-medium">Catatan Peringatan Tab</span>
+                  <span className="font-bold text-amber-600">{finalResult.warningCount} kali</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    setFinalResult(null);
+                    setStudent({ name: '', nis: '' });
+                    setView('home');
+                  }}
+                  className="px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold transition shadow"
+                >
+                  KEMBALI KE BERANDA
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 7: TEACHER LOGIN MODAL / VIEW */}
+        {/* ========================================================= */}
+        {}
+        {view === 'teacher_login' && (
+          <div className="max-w-md mx-auto w-full my-auto">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-100 space-y-6">
+              <div className="text-center space-y-1">
+                <div className="w-14 h-14 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-extrabold text-slate-900">LOGIN GURU MAPEL</h2>
+                <p className="text-xs text-slate-500">Masuk untuk mengakses Dashboard Hasil Ujian & Rekap Excel</p>
+              </div>
+
+              {teacherLoginError && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+                  {teacherLoginError}
+                </div>
+              )}
+
+              <form onSubmit={handleTeacherLogin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Username Guru</label>
+                  <input
+                    type="text"
+                    value={teacherLoginInput.username}
+                    onChange={(e) => setTeacherLoginInput({ ...teacherLoginInput, username: e.target.value })}
+                    placeholder="Masukkan username (contoh: guru)"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Password Guru</label>
+                  <input
+                    type="password"
+                    value={teacherLoginInput.password}
+                    onChange={(e) => setTeacherLoginInput({ ...teacherLoginInput, password: e.target.value })}
+                    placeholder="Masukkan password"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">Default Akses: Username <b>guru</b> | Password <b>guru2026</b></p>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setView('home')}
+                    className="px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-sm transition"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow transition"
+                  >
+                    MASUK DASHBOARD
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 8: TEACHER DASHBOARD */}
+        {/* ========================================================= */}
+        {}
+        {view === 'teacher_dashboard' && teacherAuth && (
+          <div className="space-y-8">
+            {/* DASHBOARD HEADER */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-slate-100 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full font-bold text-xs uppercase">
+                    Dashboard Evaluasi Guru
+                  </span>
+                  <span className="text-xs text-slate-400">SMK Negeri 2 Songgom (2026)</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+                  REKAP HASIL ULANGAN HARIAN
+                </h2>
+                <p className="text-slate-500 text-sm">Guru Pengampu: <b>Dwi Harry Pambudi, M.Pd</b> | Bahasa Indonesia Kelas XI</p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={handleDownloadExcel}
+                  className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>DOWNLOAD REKAP EXCEL (.xlsx)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTeacherAuth(false);
+                    setView('home');
+                  }}
+                  className="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition"
+                >
+                  Keluar Dashboard
+                </button>
+              </div>
+            </div>
+
+            {/* STATS OVERVIEW CARDS */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Total Peserta</p>
+                <p className="text-2xl font-black text-slate-900 mt-1">{teacherStats.total}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Rata-rata Nilai</p>
+                <p className="text-2xl font-black text-blue-600 mt-1">{teacherStats.avgScore}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Nilai Tertinggi</p>
+                <p className="text-2xl font-black text-emerald-600 mt-1">{teacherStats.highScore}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Nilai Terendah</p>
+                <p className="text-2xl font-black text-rose-600 mt-1">{teacherStats.lowScore}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Tuntas (≥75)</p>
+                <p className="text-2xl font-black text-teal-600 mt-1">{teacherStats.passedCount}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Belum Tuntas</p>
+                <p className="text-2xl font-black text-amber-600 mt-1">{teacherStats.failedCount}</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-medium">Total Peringatan</p>
+                <p className="text-2xl font-black text-purple-600 mt-1">{teacherStats.totalWarnings}</p>
+              </div>
+            </div>
+
+            {/* ANALYTICS & DISTRIBUTION BAR */}
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+              <h3 className="font-bold text-slate-800 text-lg">Distribusi Kategori Nilai Siswa</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {Object.entries(teacherStats.categories).map(([catName, count]) => {
+                  const pct = teacherStats.total > 0 ? Math.round((count / teacherStats.total) * 100) : 0;
+                  return (
+                    <div key={catName} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                      <div className="flex justify-between text-xs font-bold text-slate-700">
+                        <span>{catName}</span>
+                        <span>{count} Siswa ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div
+                          className={`h-2 rounded-full ${
+                            catName === 'Sangat Baik'
+                              ? 'bg-emerald-500'
+                              : catName === 'Baik'
+                              ? 'bg-blue-500'
+                              : catName === 'Cukup'
+                              ? 'bg-amber-500'
+                              : 'bg-rose-500'
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* REKAP TABLE & FILTERS */}
+            <div className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <h3 className="text-xl font-bold text-slate-900">Daftar Hasil Peserta ({filteredResults.length})</h3>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* SEARCH */}
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Cari Nama / NIS..."
+                    className="px-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 outline-none w-48"
+                  />
+
+                  {/* FILTER CATEGORY */}
+                  <select
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-white font-medium"
+                  >
+                    <option value="ALL">Semua Kategori</option>
+                    <option value="Sangat Baik">Sangat Baik (90-100)</option>
+                    <option value="Baik">Baik (80-89)</option>
+                    <option value="Cukup">Cukup (70-79)</option>
+                    <option value="Perlu Peningkatan">Perlu Peningkatan (&lt;70)</option>
+                  </select>
+
+                  {/* SORT */}
+                  <select
+                    value={sortKey}
+                    onChange={(e) => setSortKey(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 outline-none bg-white font-medium"
+                  >
+                    <option value="date_desc">Waktu Terbaru</option>
+                    <option value="score_desc">Nilai Tertinggi</option>
+                    <option value="score_asc">Nilai Terendah</option>
+                    <option value="name_asc">Nama (A-Z)</option>
+                  </select>
+
+                  {/* RESET ALL DATA BUTTON */}
+                  {resultsList.length > 0 && (
+                    <button
+                      onClick={() => setResetConfirmModal(true)}
+                      className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 transition"
+                    >
+                      Reset Data Ujian
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* TABLE DATA */}
+              <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-700 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
+                      <th className="p-3">No</th>
+                      <th className="p-3">Nama Peserta</th>
+                      <th className="p-3">NIS</th>
+                      <th className="p-3 text-center">Benar</th>
+                      <th className="p-3 text-center">Salah</th>
+                      <th className="p-3 text-center">Kosong</th>
+                      <th className="p-3 text-center">Nilai</th>
+                      <th className="p-3">Kategori</th>
+                      <th className="p-3">Durasi</th>
+                      <th className="p-3 text-center">Peringatan</th>
+                      <th className="p-3 text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-medium">
+                    {filteredResults.length === 0 ? (
+                      <tr>
+                        <td colSpan="11" className="p-8 text-center text-slate-400 italic">
+                          Belum ada data ujian peserta yang tersimpan.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredResults.map((row, index) => (
+                        <tr key={row.id} className="hover:bg-slate-50 transition">
+                          <td className="p-3">{index + 1}</td>
+                          <td className="p-3 font-bold text-slate-900">{row.name}</td>
+                          <td className="p-3 font-mono text-slate-600">{row.nis}</td>
+                          <td className="p-3 text-center text-emerald-600 font-bold">{row.correct}</td>
+                          <td className="p-3 text-center text-rose-600 font-bold">{row.incorrect}</td>
+                          <td className="p-3 text-center text-slate-500">{row.unanswered}</td>
+                          <td className="p-3 text-center">
+                            <span className="px-2.5 py-1 rounded-full font-black text-blue-700 bg-blue-50 border border-blue-200">
+                              {row.score}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${
+                              row.category === 'Sangat Baik'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : row.category === 'Baik'
+                                ? 'bg-blue-100 text-blue-800'
+                                : row.category === 'Cukup'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}>
+                              {row.category}
+                            </span>
+                          </td>
+                          <td className="p-3 text-slate-600 font-mono text-xs">{row.formattedDuration}</td>
+                          <td className="p-3 text-center">
+                            {row.warningCount > 0 ? (
+                              <span className="px-2 py-0.5 bg-amber-100 text-amber-800 font-bold rounded text-xs">
+                                {row.warningCount}x
+                              </span>
+                            ) : (
+                              <span className="text-slate-300">-</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center space-x-2">
+                            <button
+                              onClick={() => setSelectedStudentDetail(row)}
+                              className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs"
+                            >
+                              Detail
+                            </button>
+                            <button
+                              onClick={() => setDeleteIdConfirm(row.id)}
+                              className="px-2.5 py-1 rounded bg-rose-100 hover:bg-rose-200 text-rose-700 font-semibold text-xs"
+                            >
+                              Hapus
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* ========================================================= */}
+      {/* MODAL 1: ANTI-CHEAT WARNING MODAL */}
+      {/* ========================================================= */}
+      {}
+      {warningModal.open && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in duration-200">
+            <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
+              ⚠️
+            </div>
+
+            <div className="text-center space-y-2">
+              <h3 className="text-xl font-black text-slate-900">{warningModal.title}</h3>
+              <p className="text-sm text-slate-700 font-medium leading-relaxed">{warningModal.message}</p>
+
+              {warningModal.count !== null && (
+                <div className="inline-block px-3 py-1 bg-amber-500 text-white font-extrabold rounded-full text-xs mt-2">
+                  Total Peringatan: {warningModal.count} kali
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => setWarningModal({ ...warningModal, open: false })}
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow"
+              >
+                SAYA MENGERTI, L ANJUTKAN UJIAN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL 2: SUBMIT CONFIRMATION MODAL */}
+      {/* ========================================================= */}
+      {}
+      {submitConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5">
+            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-extrabold">
+              ❓
+            </div>
+
+            <div className="text-center space-y-2">
+              <h3 className="text-xl font-extrabold text-slate-900">KUMPULKAN JAWABAN?</h3>
+              <p className="text-sm text-slate-600">
+                Apakah Anda yakin ingin mengakhiri ujian? Setelah jawaban dikumpulkan, Anda tidak dapat mengubah jawaban lagi.
+              </p>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 mt-2">
+                Jawaban Terisi: {Object.keys(answers).length} dari 50 Soal
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-2">
+              <button
+                onClick={() => setSubmitConfirmModal(false)}
+                className="w-1/2 py-3.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-slate-700 transition"
+              >
+                KEMBALI KE SOAL
+              </button>
+              <button
+                onClick={() => handleFinishExam(false)}
+                className="w-1/2 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow transition"
+              >
+                YA, KUMPULKAN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL 3: STUDENT DETAIL INSPECTION (TEACHER) */}
+      {/* ========================================================= */}
+      {}
+      {selectedStudentDetail && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-bold text-slate-900">Detail Hasil Peserta</h3>
+              <button
+                onClick={() => setSelectedStudentDetail(null)}
+                className="text-slate-400 hover:text-slate-600 text-xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Nama Peserta</span>
+                <span className="font-bold">{selectedStudentDetail.name}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">NIS</span>
+                <span className="font-bold">{selectedStudentDetail.nis}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Nilai Ujian</span>
+                <span className="font-extrabold text-blue-600 text-lg">{selectedStudentDetail.score}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Kategori</span>
+                <span className="font-bold">{selectedStudentDetail.category}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Jawaban Benar / Salah / Kosong</span>
+                <span className="font-bold">{selectedStudentDetail.correct} / {selectedStudentDetail.incorrect} / {selectedStudentDetail.unanswered}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Durasi Pengerjaan</span>
+                <span className="font-bold">{selectedStudentDetail.formattedDuration}</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Peringatan Berpindah Tab</span>
+                <span className="font-bold text-amber-600">{selectedStudentDetail.warningCount} kali</span>
+              </div>
+              <div className="flex justify-between border-b pb-1">
+                <span className="text-slate-500">Waktu Mulai</span>
+                <span className="font-bold">{new Date(selectedStudentDetail.startTime).toLocaleString('id-ID')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Waktu Selesai</span>
+                <span className="font-bold">{new Date(selectedStudentDetail.endTime).toLocaleString('id-ID')}</span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => setSelectedStudentDetail(null)}
+                className="w-full py-3 rounded-xl bg-slate-800 text-white font-bold text-sm"
+              >
+                Tutup Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL 4: CONFIRM RESET ALL DATA */}
+      {/* ========================================================= */}
+      {}
+      {resetConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+            <h3 className="text-xl font-bold text-rose-600">RESET SELURUH DATA UJIAN?</h3>
+            <p className="text-sm text-slate-600">
+              Apakah Anda yakin ingin menghapus seluruh data rekap nilai ujian? Data yang telah dihapus tidak dapat dipulihkan.
+            </p>
+            <div className="flex justify-center gap-3 pt-2">
+              <button
+                onClick={() => setResetConfirmModal(false)}
+                className="px-5 py-2.5 rounded-xl border border-slate-300 font-semibold text-slate-700"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleResetAllData}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold"
+              >
+                Ya, Hapus Semua Data
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: CONFIRM DELETE SINGLE ITEM */}
+      {deleteIdConfirm && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+            <h3 className="text-xl font-bold text-rose-600">HAPUS DATA PESERTA?</h3>
+            <p className="text-sm text-slate-600">
+              Apakah Anda yakin ingin menghapus data ini? Data yang telah dihapus tidak dapat dipulihkan.
+            </p>
+            <div className="flex justify-center gap-3 pt-2">
+              <button
+                onClick={() => setDeleteIdConfirm(null)}
+                className="px-5 py-2.5 rounded-xl border border-slate-300 font-semibold text-slate-700"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => handleDeleteStudent(deleteIdConfirm)}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold"
+              >
+                Ya, Hapus Data Ini
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER */}
+      <footer className="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-xs text-center mt-auto">
+        <div className="max-w-7xl mx-auto px-4 space-y-1">
+          <p className="font-semibold text-slate-300">
+            ULANGAN HARIAN BAHASA INDONESIA © 2026 – SMK NEGERI 2 SONGGOM
+          </p>
+          <p>Guru Pengampu: Dwi Harry Pambudi, M.Pd | Materi: Teks Argumentasi & Poster Argumentatif</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
